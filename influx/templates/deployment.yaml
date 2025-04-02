@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: influxdb
+  labels:
+    ranpm: "yes"
+    ranpmlog: "yes"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: influxdb
+  template:
+    metadata:
+      labels:
+        app: influxdb
+    spec:
+      containers:
+        - name: influxdb
+          image: influxdb:2.6.1
+          ports:
+            - containerPort: 8086
+          envFrom:
+            - configMapRef:
+                name: influxdb-config
+          volumeMounts:
+            - name: influxdb-data
+              mountPath: /var/lib/influxdb2
+      volumes:
+        - name: influxdb-data
+          persistentVolumeClaim:
+            claimName: influxdb-data-pvc
+
